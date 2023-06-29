@@ -25,9 +25,9 @@ const
 
 let
   # system pins
-  PinI2cSda*                  = PicoDefaultI2cSdaPin
-  PicI2cScl*                  = PicoDefaultI2cSclPin
-  PinWifiCs*                  = 25.Gpio # PicoDefaultLedPin
+  PinI2cSda*                  = DefaultI2cSdaPin
+  PicI2cScl*                  = DefaultI2cSclPin
+  PinWifiCs*                  = 25.Gpio # DefaultLedPin
 
 type
   # wake reasons

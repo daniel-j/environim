@@ -67,12 +67,16 @@ proc bsecDataCallback(data: Bme68xData; outputs: BsecOutputs; bsec: var Bsec2) =
         echo "Gas = ", signal, " %"
     else: discard
 
+  let colour = bh1745Sensor.getRgbcRaw()
+  echo "Colour: ", colour
+  echo "Colour Temperature: ", colour.toColourTemperature(), "K"
+  echo "Light level: ", colour.toLux(), " lx"
+
 proc initBoardIndoor*(i2c: var I2c) =
   bh1745Sensor = createBh1745(i2c, Bh1745I2cAddrDefault)
   if not bh1745Sensor.init():
     echo "Failed to set up light/colour sensor"
     return
-
 
   bsecSensor = createBsec2()
 
@@ -102,10 +106,5 @@ proc initBoardIndoor*(i2c: var I2c) =
     # echo data
     if not bsecSensor.run():
       echo "BSEC error! ", bsecSensor.status
-    # let colour = bh1745Sensor.getRgbcRaw()
-    # echo "Colour: ", colour
-    # echo "Colour Temperature: ", colour.toColourTemperature(), "K"
-    # echo "Light level: ", colour.toLux(), " lx"
     # sleepMs(3000)
     tightLoopContents()
-
