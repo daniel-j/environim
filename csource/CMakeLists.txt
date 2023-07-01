@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # hide a warning in lwip
 set_source_files_properties(
-  "${PICO_LWIP_PATH}/src/apps/altcp_tls/altcp_tls_mbedtls.c"
+  ${PICO_LWIP_PATH}/src/apps/altcp_tls/altcp_tls_mbedtls.c
   PROPERTIES COMPILE_OPTIONS "-Wno-unused-result"
 )
 
@@ -105,7 +105,13 @@ execute_process(
   OUTPUT_VARIABLE NIMBLE_PIMORONI_PICO
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-add_subdirectory(${NIMBLE_PIMORONI_PICO}/pimoroni_pico/vendor pimoroni_pico_vendor)
+
+include(${NIMBLE_PIMORONI_PICO}/pimoroni_pico/cmake/pimoroni_pico.cmake)
+
+# Pico SDK patches needed
+pico_sdk_patch_source("src/rp2_common/pico_standard_link/crt0.S" "${PIMORONI_PICO_DIR}/pico_sdk_crt0.patch" pico_standard_link)
+pico_sdk_patch_source("src/rp2_common/pico_runtime/runtime.c" "${PIMORONI_PICO_DIR}/pico_sdk_runtime.patch" pico_runtime)
+
 
 # Additional libraries
 target_link_libraries(${OUTPUT_NAME}
