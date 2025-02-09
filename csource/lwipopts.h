@@ -6,11 +6,16 @@
 // Common settings used in most of the pico_w examples
 // (see https://www.nongnu.org/lwip/2_1_x/group__lwip__opts.html for details)
 
-// allow override in some examples
+#ifdef PICO_CYW43_ARCH_FREERTOS
+#define NO_SYS 0
+#define LWIP_SOCKET 1
+#endif
+
+// allow override
 #ifndef NO_SYS
 #define NO_SYS                      1
 #endif
-// allow override in some examples
+// allow override
 #ifndef LWIP_SOCKET
 #define LWIP_SOCKET                 0
 #endif
@@ -29,9 +34,9 @@
 #define LWIP_ETHERNET               1
 #define LWIP_ICMP                   1
 #define LWIP_RAW                    1
-#define TCP_WND                     (16 * TCP_MSS)
 #define TCP_MSS                     1460
-#define TCP_SND_BUF                 (8 * TCP_MSS)
+#define TCP_WND                     (4 * TCP_MSS)
+#define TCP_SND_BUF                 (4 * TCP_MSS)
 #define TCP_SND_QUEUELEN            ((4 * (TCP_SND_BUF) + (TCP_MSS - 1)) / (TCP_MSS))
 #define LWIP_NETIF_STATUS_CALLBACK  1
 #define LWIP_NETIF_LINK_CALLBACK    1
@@ -89,17 +94,20 @@
 #define DHCP_DEBUG                  LWIP_DBG_OFF
 
 
-#if !NO_SYS
+#if NO_SYS == 0
 #define TCPIP_THREAD_STACKSIZE 1024
 #define DEFAULT_THREAD_STACKSIZE 1024
 #define DEFAULT_RAW_RECVMBOX_SIZE 8
 #define TCPIP_MBOX_SIZE 8
+#define LWIP_TIMEVAL_PRIVATE 0
 
 // not necessary, can be done either way
 #define LWIP_TCPIP_CORE_LOCKING_INPUT 1
+
+// ping_thread sets socket receive timeout, so enable this feature
+#define LWIP_SO_RCVTIMEO 1
 #endif
 
-#define LWIP_TIMEVAL_PRIVATE 0
 //#define LWIP_IPV6 1
 
 #define LWIP_ALTCP 1
@@ -111,16 +119,24 @@
 // #define LWIP_STATS_DISPLAY          1
 // #define HTTPC_DEBUG 1
 
-
-// #define LWIP_DEBUG 1
-// #define ALTCP_MBEDTLS_DEBUG  LWIP_DBG_ON
+// #define ALTCP_MBEDTLS_DEBUG  1
+// #define ALTCP_MBEDTLS_LIB_DEBUG 1
 
 // SNTP
 #define SNTP_DEBUG LWIP_DBG_OFF
+
 #define SNTP_SERVER_DNS 1
+
 extern void __sntp_set_system_time(uint32_t sec);
 #define SNTP_SET_SYSTEM_TIME(sec) __sntp_set_system_time(sec)
-// once an hour
-#define SNTP_UPDATE_DELAY 60*1000*1000
+
+// every 6 hours
+#define SNTP_UPDATE_DELAY 6*60*60*1000
+
+
+// If we use MQTT:
+#define MEMP_NUM_SYS_TIMEOUT            (LWIP_NUM_SYS_TIMEOUT_INTERNAL + 1)
+
+#define MQTT_OUTPUT_RINGBUF_SIZE 1024
 
 #endif // _LWIPOPTS_H
