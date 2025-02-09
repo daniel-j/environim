@@ -50,6 +50,7 @@ switch("threads", "off")
 # switch("hints", "off")
 # switch("debugger", "native")
 
+switch("compileOnly", "on")
 switch("nimcache", cmakeBinaryDir / projectName() / "nimcache")
 
 switch("define", "checkAbi")
